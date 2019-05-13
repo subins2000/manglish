@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Malayalam to Manglish</string>
+    <string name="app_name">Manglish</string>
+    <string name="title_activity_main">Manglish</string>
 </resources>
