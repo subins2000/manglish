@@ -3,6 +3,7 @@ package subins2000.manglish;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -108,11 +109,15 @@ public class HomeFragment extends Fragment implements AsyncResponse {
             inputText.setText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("text", ""));
         }
 
+        constructAsyncThread(view);
+
+        return view;
+    }
+
+    private void constructAsyncThread(View view) {
         converterAsyncTask = new Converter();
         converterAsyncTask.makeScope(view);
         converterAsyncTask.delegate = this;
-
-        return view;
     }
 
     //this override the implemented method from asyncTask
@@ -125,6 +130,11 @@ public class HomeFragment extends Fragment implements AsyncResponse {
     }
 
     void updateOutput(View view) {
+        if (converterAsyncTask.getStatus() != AsyncTask.Status.PENDING){
+            converterAsyncTask.cancel(true);
+            constructAsyncThread(view);
+        }
+
         EditText inputText = view.findViewById(R.id.inputText);
         String text = inputText.getText().toString();
         converterAsyncTask.execute(text);
