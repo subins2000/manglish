@@ -1,8 +1,12 @@
 package subins2000.manglish;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +83,22 @@ public class HomeFragment extends Fragment {
                 updateOutput(getView());
             }
         });
+
+        EditText inputText = view.findViewById(R.id.inputText);
+        inputText.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence cs, int s, int b, int c) {
+                String text = cs.toString();
+
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+                editor.putString("text", text);
+                editor.commit();
+            }
+            public void afterTextChanged(Editable editable) { }
+            public void beforeTextChanged(CharSequence cs, int i, int j, int
+                    k) { }
+        });
+
+        inputText.setText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("text", ""));
 
         return view;
     }
