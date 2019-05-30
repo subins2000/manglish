@@ -15,14 +15,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,13 +24,15 @@ import java.io.InputStreamReader;
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements AsyncResponse {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
+
+    Converter converterAsyncTask;
 
     private OnFragmentInteractionListener mListener;
 
@@ -65,6 +59,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
@@ -113,62 +108,26 @@ public class HomeFragment extends Fragment {
             inputText.setText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("text", ""));
         }
 
+        converterAsyncTask = new Converter();
+        converterAsyncTask.makeScope(view);
+        converterAsyncTask.delegate = this;
+
         return view;
+    }
+
+    //this override the implemented method from asyncTask
+    @Override
+    public void processFinish(String result){
+        //Here you will receive the result fired from async class
+        //of onPostExecute(result) method.
+        TextView outputText = getView().findViewById(R.id.outputText);
+        outputText.setText(result);
     }
 
     void updateOutput(View view) {
         EditText inputText = view.findViewById(R.id.inputText);
         String text = inputText.getText().toString();
-
-        TextView outputText = view.findViewById(R.id.outputText);
-
-        Object[] params = new Object[] { text };
-
-        // Every Rhino VM begins with the enter()
-        // This Context is not Android's Context
-        Context rhino = Context.enter();
-
-        // Turn off optimization to make Rhino Android compatible
-        rhino.setOptimizationLevel(-1);
-
-        BufferedReader reader = null;
-        try {
-            Scriptable scope = rhino.initStandardObjects();
-
-            reader = new BufferedReader(
-                    new InputStreamReader(view.getContext().getAssets().open("ml2en.js"), "UTF-8"));
-
-            // Note the forth argument is 1, which means the JavaScript source has
-            // been compressed to only one line using something like YUI
-            rhino.evaluateReader(scope, reader, "JavaScript", 1, null);
-
-            // Get the functionName defined in JavaScriptCode
-            Object obj = scope.get("ml2en", scope);
-
-            if (obj instanceof Function) {
-                Function jsFunction = (Function) obj;
-
-                // Call the function with params
-                Object jsResult = jsFunction.call(rhino, scope, scope, params);
-                // Parse the jsResult object to a String
-                String result = Context.toString(jsResult);
-
-                outputText.setText(result);
-            }
-        } catch (IOException e) {
-            //log the exception
-            Log.e("outputText", e.toString());
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    //log the exception
-                }
-            }
-            Context.exit();
-        }
-
+        converterAsyncTask.execute(text);
     }
 
     /**
