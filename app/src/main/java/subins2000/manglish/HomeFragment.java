@@ -1,5 +1,6 @@
 package subins2000.manglish;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -98,7 +99,19 @@ public class HomeFragment extends Fragment {
                     k) { }
         });
 
-        inputText.setText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("text", ""));
+        // Get intent, action and MIME type
+        Intent intent = getActivity().getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+
+        if (Intent.ACTION_SEND.equals(action) && type != null) {
+            if ("text/plain".equals(type)) {
+                handleIncomingText(intent, view); // Handle text being received
+            }
+        } else {
+            // Handle other intents, such as being started from the home screen
+            inputText.setText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("text", ""));
+        }
 
         return view;
     }
@@ -157,6 +170,21 @@ public class HomeFragment extends Fragment {
         }
 
     }
+
+    /**
+     * Handle share text
+     * @param intent
+     * @param view
+     */
+    void handleIncomingText(Intent intent, View view) {
+        String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (sharedText != null) {
+            EditText inputText = view.findViewById(R.id.inputText);
+            inputText.setText(sharedText);
+            updateOutput(view);
+        }
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

@@ -6,47 +6,48 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-    <android.widget.ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <EditText
+            android:id="@+id/inputText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:gravity="top|left"
+            android:inputType="textMultiLine"
+            android:isScrollContainer="false"
+            android:lines="8"
+            android:maxLines="10"
+            android:minLines="6"
+            android:scrollbars="vertical"
+            android:shadowRadius="10"
+            android:textAppearance="@android:style/TextAppearance"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <EditText
-                android:id="@+id/inputText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top|left"
-                android:inputType="textMultiLine"
-                android:isScrollContainer="false"
-                android:lines="8"
-                android:maxLines="10"
-                android:minLines="6"
-                android:scrollbars="vertical"
-                android:shadowRadius="10"
-                android:textAppearance="@android:style/TextAppearance"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <Button
+            android:id="@+id/convert_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/convert_button" />
 
-            <Button
-                android:id="@+id/convert_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/convert_button" />
+        <android.widget.ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/outputText"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.44"
                 app:layout_constraintStart_toStartOf="parent" />
-        </LinearLayout>
-    </android.widget.ScrollView>
+        </android.widget.ScrollView>
+
+    </LinearLayout>
 
 
 </FrameLayout>
