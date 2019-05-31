@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="35dp"
+    android:paddingLeft="35dp"
+    android:paddingTop="15dp"
+    android:paddingEnd="15dp"
+    android:paddingRight="15dp"
+    android:paddingBottom="15dp">
+
+    <TextView
+        android:id="@+id/contributor_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:maxLines="3" />
+
+</RelativeLayout>

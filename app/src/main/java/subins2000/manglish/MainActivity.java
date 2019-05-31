@@ -2,8 +2,6 @@ package subins2000.manglish;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -17,7 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener, AboutFragment.OnFragmentInteractionListener {
+
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         showFragment(new HomeFragment());
@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_about) {
+            showFragment(new AboutFragment());
         }
 
         return super.onOptionsItemSelected(item);
@@ -84,10 +84,12 @@ public class MainActivity extends AppCompatActivity
 
         Fragment frag = null; // create a Fragment Object
 
+        navigationView.setCheckedItem(id);
+
         if (id == R.id.nav_home) {
             frag = new HomeFragment();
         } else if (id == R.id.nav_about) {
-
+            frag = new AboutFragment();
         }
 
         if (frag != null) {
