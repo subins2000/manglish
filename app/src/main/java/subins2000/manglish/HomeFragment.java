@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment implements AsyncResponse {
     }
 
     void updateOutput(View view) {
-        TextView outputText = getView().findViewById(R.id.outputText);
+        TextView outputText = view.findViewById(R.id.outputText);
         outputText.setText(R.string.converting);
 
         if (converterAsyncTask.getStatus() != AsyncTask.Status.PENDING){
@@ -153,6 +153,8 @@ public class HomeFragment extends Fragment implements AsyncResponse {
         if (sharedText != null) {
             EditText inputText = view.findViewById(R.id.inputText);
             inputText.setText(sharedText);
+
+            constructAsyncThread(view);
             updateOutput(view);
         }
     }

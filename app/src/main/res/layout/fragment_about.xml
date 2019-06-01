@@ -12,12 +12,53 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
+            android:text="@string/donate_heading"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:text="@string/hello_blank_fragment"
+            android:layout_marginRight="5dp"
+            android:text="If you found this app useful, please consider a donation to help maintain it :)" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/upi_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UPI - subins2000@okaxis"
+                android:layout_weight=".50" />
+
+            <Button
+                android:id="@+id/donate_other_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Other"
+                android:layout_weight=".50" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:text="@string/contributors_heading"
             android:textSize="18sp" />
 
         <ListView
@@ -42,6 +83,8 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/border"
+            android:clickable="false"
+            android:editable="false"
             android:inputType="textMultiLine"
             android:padding="5dp"
             android:text="@string/licenses_body" />

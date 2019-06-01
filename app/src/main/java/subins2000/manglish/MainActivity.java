@@ -19,6 +19,9 @@ public class MainActivity extends AppCompatActivity
 
     NavigationView navigationView;
 
+    Fragment homeFragment = new HomeFragment();
+    Fragment aboutFragment = new AboutFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,15 @@ public class MainActivity extends AppCompatActivity
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        showFragment(new HomeFragment());
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        // Add fragments
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.frame, homeFragment);
+        transaction.add(R.id.frame, aboutFragment);
+        transaction.commit();
+
+        showFragment(homeFragment);
     }
 
     @Override
@@ -65,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_about) {
             showFragment(new AboutFragment());
+            navigationView.getMenu().getItem(1).setChecked(true);
         }
 
         return super.onOptionsItemSelected(item);
@@ -72,7 +84,9 @@ public class MainActivity extends AppCompatActivity
 
     public void showFragment(Fragment frag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame, frag);
+        transaction.hide(homeFragment);
+        transaction.hide(aboutFragment);
+        transaction.show(frag);
         transaction.commit();
     }
 
@@ -87,9 +101,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(id);
 
         if (id == R.id.nav_home) {
-            frag = new HomeFragment();
+            frag = homeFragment;
         } else if (id == R.id.nav_about) {
-            frag = new AboutFragment();
+            frag = aboutFragment;
         }
 
         if (frag != null) {

@@ -10,8 +10,12 @@
     <string name="convert_button">Convert To Manglish</string>
     <string name="converting">Converting...</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Made possible by</string>
+    <string name="donate_heading">Donate</string>
+    <string name="contributors_heading">Made possible by</string>
     <string name="licenses_heading">Licenses</string>
     <string name="licenses_body">subins2000.manglish\n==================\nCopyleft Subin Siby, 2019\nLicensed under GNU GPL v3\n\nml2en.js\n=======\nThis work is licensed under GNU GPL v2\nKailash Nadh, 2012</string>
+
+    <string name="upi_link">upi://pay?pa=subins2000@okaxis&amp;pn=Subin%20Siby</string>
+    <string name="donate_other_link">http://subinsb.com/donate</string>
+
 </resources>

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import org.json.JSONArray;
@@ -82,6 +83,27 @@ public class AboutFragment extends Fragment {
                 String url = adapter.website[position];
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
+                startActivity(i);
+            }
+        });
+
+        Button donateUPIBtn = view.findViewById(R.id.upi_button);
+        donateUPIBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(getString(R.string.upi_link)));
+                Intent chooser = Intent.createChooser(i, "Pay with...");
+                startActivityForResult(chooser, 1, null);
+            }
+        });
+
+        Button donateOtherBtn = view.findViewById(R.id.donate_other_button);
+        donateOtherBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(getString(R.string.donate_other_link)));
                 startActivity(i);
             }
         });
