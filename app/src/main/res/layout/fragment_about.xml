@@ -40,8 +40,9 @@
                 android:id="@+id/upi_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight=".50"
                 android:text="UPI - subins2000@okaxis"
-                android:layout_weight=".50" />
+                android:theme="@style/Base.CardView" />
 
             <Button
                 android:id="@+id/donate_other_button"
@@ -66,6 +67,12 @@
             style="@style/Widget.AppCompat.ListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></ListView>
+
+        <Button
+            android:id="@+id/project_site_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Project Website" />
 
         <TextView
             android:id="@+id/textView2"

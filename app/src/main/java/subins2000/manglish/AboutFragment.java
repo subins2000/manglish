@@ -108,6 +108,16 @@ public class AboutFragment extends Fragment {
             }
         });
 
+        Button projectSiteBtn = view.findViewById(R.id.project_site_button);
+        projectSiteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(getString(R.string.project_site)));
+                startActivity(i);
+            }
+        });
+
         return view;
     }
 

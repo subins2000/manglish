@@ -2,8 +2,8 @@
     <string name="app_name">Manglish</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Malayalam To Manglish</string>
-    <string name="nav_header_subtitle">subinsb.com/manglish</string>
+    <string name="nav_header_title">Manglish</string>
+    <string name="nav_header_subtitle">Convert malayalam to manglish</string>
     <string name="nav_home">Home</string>
     <string name="nav_about">About</string>
     <string name="action_settings">Settings</string>
@@ -15,6 +15,7 @@
     <string name="licenses_heading">Licenses</string>
     <string name="licenses_body">subins2000.manglish\n==================\nCopyleft Subin Siby, 2019\nLicensed under GNU GPL v3\n\nml2en.js\n=======\nThis work is licensed under GNU GPL v2\nKailash Nadh, 2012</string>
 
+    <string name="project_site">http://subinsb.com/manglish</string>
     <string name="upi_link">upi://pay?pa=subins2000@okaxis&amp;pn=Subin%20Siby</string>
     <string name="donate_other_link">http://subinsb.com/donate</string>
 
