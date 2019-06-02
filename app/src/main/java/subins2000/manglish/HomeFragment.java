@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -95,7 +96,7 @@ public class HomeFragment extends Fragment implements AsyncResponse {
                     k) { }
         });
 
-        // Get intent, action and MIME type
+        // Handle text share to this app
         Intent intent = getActivity().getIntent();
         String action = intent.getAction();
         String type = intent.getType();
@@ -104,6 +105,8 @@ public class HomeFragment extends Fragment implements AsyncResponse {
             if ("text/plain".equals(type)) {
                 handleIncomingText(intent, view); // Handle text being received
             }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Intent.ACTION_PROCESS_TEXT.equals(action)) {
+            handleIncomingText(intent, view);
         } else {
             // Handle other intents, such as being started from the home screen
             inputText.setText(PreferenceManager.getDefaultSharedPreferences(getContext()).getString("text", ""));
@@ -150,6 +153,10 @@ public class HomeFragment extends Fragment implements AsyncResponse {
      */
     void handleIncomingText(Intent intent, View view) {
         String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+        if (sharedText == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            sharedText = intent.getStringExtra(Intent.EXTRA_PROCESS_TEXT);
+
         if (sharedText != null) {
             EditText inputText = view.findViewById(R.id.inputText);
             inputText.setText(sharedText);
