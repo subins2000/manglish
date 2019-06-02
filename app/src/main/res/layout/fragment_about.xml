@@ -18,7 +18,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:text="@string/donate_heading"
+            android:text="@string/contribute_heading"
             android:textSize="18sp" />
 
         <TextView
@@ -27,31 +27,13 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:text="If you found this app useful, please consider a donation to help maintain it :)" />
+            android:text="Support and help maintain this project." />
 
-        <LinearLayout
+        <Button
+            android:id="@+id/project_site_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/upi_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".50"
-                android:text="UPI - subins2000@okaxis"
-                android:theme="@style/Base.CardView" />
-
-            <Button
-                android:id="@+id/donate_other_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Other"
-                android:layout_weight=".50" />
-
-        </LinearLayout>
+            android:text="Project Website" />
 
         <TextView
             android:layout_width="match_parent"
@@ -67,12 +49,6 @@
             style="@style/Widget.AppCompat.ListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></ListView>
-
-        <Button
-            android:id="@+id/project_site_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Project Website" />
 
         <TextView
             android:id="@+id/textView2"

@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_about) {
-            showFragment(new AboutFragment());
+            showFragment(aboutFragment);
             navigationView.getMenu().getItem(1).setChecked(true);
         }
 
