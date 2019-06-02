@@ -43,8 +43,7 @@
 
             <TextView
                 android:id="@+id/outputText"
-                android:textSize="20sp"
-                android:layout_marginTop="20dp"
+                android:textSize="16sp"
                 android:textIsSelectable="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
