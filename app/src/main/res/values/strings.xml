@@ -10,6 +10,7 @@
     <string name="convert_button">Convert To Manglish</string>
     <string name="copy_button">Copy</string>
     <string name="converting">Converting...</string>
+    <string name="copied">Copied Output !</string>
 
     <string name="contribute_heading">Contribute</string>
     <string name="contributors_heading">Made possible by</string>

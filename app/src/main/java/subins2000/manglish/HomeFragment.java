@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -95,6 +96,8 @@ public class HomeFragment extends Fragment implements AsyncResponse {
                 ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("manglish_output", outputText.getText());
                 clipboard.setPrimaryClip(clip);
+
+                Toast.makeText(getActivity(), getString(R.string.copied), Toast. LENGTH_SHORT).show();
             }
         });
 
