@@ -1,0 +1,12 @@
+Translate or convert malayalam text to manglish. Useful for people who can't read malayalam, but understands it.
+
+    "കേരളം" will be converted to "Keralam".
+
+    Features
+
+    * Fast, quick conversion
+    * Ability to select text in other apps, browsers and share to this app to convert
+    * No ads, bloatware
+    * As lightweight as possible
+
+    More about app : https://subinsb.com/manglish
