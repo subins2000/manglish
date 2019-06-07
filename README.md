@@ -26,3 +26,16 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 ```
 
 [GNU GPL-3.0-only](https://spdx.org/licenses/GPL-3.0-only)
+
+## Publishing
+
+[fastlane supply](https://docs.fastlane.tools/actions/supply/) is used to publish to Google Play. This metadata is also [used by F-Droid](https://f-droid.org/en/docs/All_About_Descriptions_Graphics_and_Screenshots/).
+
+See `fastlane/` folder.
+
+* Add changelog
+* Update screenshots
+
+```
+fastlane supply --apk app/release/app-release.apk --json-key api-file.json  --track rollout --rollout 0.5 --package_name subins2000.manglish
+```
