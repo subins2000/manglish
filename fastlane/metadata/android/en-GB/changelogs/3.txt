@@ -1,0 +1,2 @@
+* When selecting text in other apps, "Manglish" option will be alongside cut & copy
+* Add copy output to clipboard feature 

@@ -1,0 +1,2 @@
+* Fix logo not displaying on Android 9
+* Fix about button not working 
