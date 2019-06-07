@@ -1,5 +1,8 @@
 package subins2000.manglish;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -14,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -74,11 +78,23 @@ public class HomeFragment extends Fragment implements AsyncResponse {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView fab = view.findViewById(R.id.convert_button);
-        fab.setOnClickListener(new View.OnClickListener() {
+        Button convertBtn = view.findViewById(R.id.convert_button);
+        convertBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 updateOutput(getView());
+            }
+        });
+
+        Button copyBtn = view.findViewById(R.id.copy_button);
+        copyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView outputText = getView().findViewById(R.id.outputText);
+
+                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("manglish_output", outputText.getText());
+                clipboard.setPrimaryClip(clip);
             }
         });
 
@@ -128,8 +144,13 @@ public class HomeFragment extends Fragment implements AsyncResponse {
     public void processFinish(String result){
         //Here you will receive the result fired from async class
         //of onPostExecute(result) method.
-        TextView outputText = getView().findViewById(R.id.outputText);
+        View view = getView();
+
+        TextView outputText = view.findViewById(R.id.outputText);
         outputText.setText(result);
+
+        Button copyBtn = view.findViewById(R.id.copy_button);
+        copyBtn.setEnabled(true);
     }
 
     void updateOutput(View view) {
