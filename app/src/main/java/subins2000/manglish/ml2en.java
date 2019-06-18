@@ -2,6 +2,9 @@ package subins2000.manglish;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Java port of ml2en.js
@@ -125,8 +128,67 @@ public class ml2en {
         _modifiers.put("ഃ", "a");
     }
 
-    public void ml2en(String input) {
+    // ______ transliterate a malayalam string to english phonetically
+    String transliterate(String input) {
+        // replace zero width non joiners
+        input = input.replace("/[\u200B-\u200D\uFEFF]/g", "");
+
+        // replace modified compounds first
+        input = _replaceModifiedGlyphs(_compounds, input);
+
+        // replace modified non-compounds
+        input = _replaceModifiedGlyphs(_vowels, input);
+        input = _replaceModifiedGlyphs(_consonants, input);
+
+        String k = "", v = "";
+
+        // replace unmodified compounds
+        long i = 0;
+        for (Map.Entry<String, String> pair : _compounds.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k + "്([\\w])", 'g').matcher(input).replaceAll(v + "$1" );	// compounds ending in chandrakkala but not at the end of the word
+            input = Pattern.compile(k + "്", 'g').matcher(input).replaceAll(v + "u" );	// compounds ending in chandrakkala have +'u' pronunciation
+            input = Pattern.compile(k, 'g').matcher(input).replaceAll(v + 'a' );	// compounds not ending in chandrakkala have +'a' pronunciation
+        }
+
+        return input;
+    }
+
+    // ______ replace modified glyphs
+    String _replaceModifiedGlyphs(Map glyphs, String input) {
+        // see if a given set of glyphs have modifiers trailing them
+        int matchCount = 0;
+        Matcher match;
+        Pattern re = Pattern.compile("(" + String.join("|", _getKeys(glyphs)) + ")(" + String.join("|", _getKeys(_modifiers)) + ")", 'g');
+
+        // if yes, replace the glpyh with its roman equivalent, and the modifier with its
+
+        match = re.matcher(input);
+        matchCount = match.groupCount();
+
+        int i;
+        for (i = 0; i < matchCount; i++) {
+            input = Pattern.compile(match.group(i), 'g').matcher(input).replaceAll(glyphs.get( match.group(i) ) + _modifiers.get( match.group(i) ));
+        }
+
+        return input;
+    }
+
+    // ______ get the keys of an object literal
+    String[] _getKeys(Map<String, String> o) {
+        Set<String> keys = o.keySet();
+        String[] keysStr = keys.toArray(new String[keys.size()]);
+        return keysStr;
+    }
+
+    public void ml2en() {
         initVars();
+    }
+
+    public String convert(String input) {
+        return transliterate(input);
     }
 
 }
