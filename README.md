@@ -6,6 +6,13 @@ A malayalam to manglish converter Android app.
 
 [Donate](https://subinsb.com/malayalam-to-manglish-converter/#donate)
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+     alt="Get it on F-Droid"
+     height="80">](https://f-droid.org/packages/subins2000.manglish/)
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+     alt="Get it on Google Play"
+     height="80">](https://play.google.com/store/apps/details?id=subins2000.manglish)
+
 ## LICENSE
 
 ```
