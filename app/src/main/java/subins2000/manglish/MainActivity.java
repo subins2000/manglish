@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-                if(slideOffset > 0) tryHideKeyboard();
+                if (slideOffset > 0) tryHideKeyboard();
             }
         });
         toggle.syncState();
@@ -127,20 +127,23 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (activeNavId != id) {
-            activeNavId = id;
-            switch (id) {
-                case R.id.nav_home:
-                    setFragment(new HomeFragment());
-                    break;
-                case R.id.nav_about:
-                    setFragment(new AboutFragment());
-                    break;
+
+        try {
+            if (activeNavId != id) {
+                activeNavId = id;
+                switch (id) {
+                    case R.id.nav_home:
+                        setFragment(new HomeFragment());
+                        return true;
+                    case R.id.nav_about:
+                        setFragment(new AboutFragment());
+                        return true;
+                }
             }
+            return false;
+        } finally {
             drawer.closeDrawer(GravityCompat.START);
-            return true;
         }
-        return false;
     }
 
     @Override
