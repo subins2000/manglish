@@ -1,79 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".HomeFragment">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/inputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:hint="@string/paste_text_hint"
+            android:inputType="textMultiLine"
+            android:isScrollContainer="false"
+            android:lines="6"
+            android:maxLines="6"
+            android:minLines="6"
+            android:scrollbars="vertical"
+            android:shadowRadius="10"
+            android:textAppearance="@android:style/TextAppearance" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/convert_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".50"
+            android:text="@string/convert_button"
+            android:theme="@style/Base.CardView" />
+
+        <Button
+            android:id="@+id/copy_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight=".10"
+            android:enabled="false"
+            android:text="@string/copy_button" />
+
+    </LinearLayout>
+
+    <android.widget.ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:paddingBottom="5dp">
 
-        <com.google.android.material.textfield.TextInputLayout
+        <TextView
+            android:id="@+id/outputText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:endIconMode="clear_text">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/inputText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top|left"
-                android:inputType="textMultiLine"
-                android:isScrollContainer="false"
-                android:lines="6"
-                android:maxLines="6"
-                android:minLines="6"
-                android:scrollbars="vertical"
-                android:shadowRadius="10"
-                android:textAppearance="@android:style/TextAppearance"
-                android:hint="@string/paste_text_hint" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/convert_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".50"
-                android:text="@string/convert_button"
-                android:theme="@style/Base.CardView"/>
-
-            <Button
-                android:id="@+id/copy_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight=".10"
-                android:enabled="false"
-                android:text="@string/copy_button" />
-
-        </LinearLayout>
-
-        <android.widget.ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:paddingBottom="5dp">
-
-            <TextView
-                android:id="@+id/outputText"
-                android:textSize="16sp"
-                android:textIsSelectable="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/black" />
-        </android.widget.ScrollView>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-</FrameLayout>
+            android:textColor="@android:color/black"
+            android:textIsSelectable="true"
+            android:textSize="16sp" />
+    </android.widget.ScrollView>
+</androidx.appcompat.widget.LinearLayoutCompat>
