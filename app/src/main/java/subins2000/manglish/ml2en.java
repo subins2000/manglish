@@ -136,6 +136,8 @@ public class ml2en {
         // replace modified compounds first
         input = _replaceModifiedGlyphs(_compounds, input);
 
+        System.out.println(input);
+
         // replace modified non-compounds
         input = _replaceModifiedGlyphs(_vowels, input);
         input = _replaceModifiedGlyphs(_consonants, input);
@@ -143,7 +145,6 @@ public class ml2en {
         String k = "", v = "";
 
         // replace unmodified compounds
-        long i = 0;
         for (Map.Entry<String, String> pair : _compounds.entrySet()) {
             k = pair.getKey();
             v = pair.getValue();
@@ -151,6 +152,22 @@ public class ml2en {
             input = Pattern.compile(k + "്([\\w])", 'g').matcher(input).replaceAll(v + "$1" );	// compounds ending in chandrakkala but not at the end of the word
             input = Pattern.compile(k + "്", 'g').matcher(input).replaceAll(v + "u" );	// compounds ending in chandrakkala have +'u' pronunciation
             input = Pattern.compile(k, 'g').matcher(input).replaceAll(v + 'a' );	// compounds not ending in chandrakkala have +'a' pronunciation
+        }
+
+        // glyphs not ending in chandrakkala have +'a' pronunciation
+        for (Map.Entry<String, String> pair : _consonants.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k + "(?!്)", 'g').matcher(input).replaceAll(v + "a" );
+        }
+
+        // glyphs ending in chandrakkala not at the end of a word
+        for (Map.Entry<String, String> pair : _consonants.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k + "(?![\\\\s\\)\\.;,\\\"'\\/\\\\\\%\\!])", 'g').matcher(input).replaceAll(v);
         }
 
         return input;
@@ -168,9 +185,9 @@ public class ml2en {
         match = re.matcher(input);
         matchCount = match.groupCount();
 
-        int i;
-        for (i = 0; i < matchCount; i++) {
-            input = Pattern.compile(match.group(i), 'g').matcher(input).replaceAll(glyphs.get( match.group(i) ) + _modifiers.get( match.group(i) ));
+        while (match.find()) {
+            System.out.println(match.group(0));
+            input = Pattern.compile(match.group(0), 'g').matcher(input).replaceAll(glyphs.get(match.group(1)) + _modifiers.get(match.group(2)));
         }
 
         return input;
@@ -183,7 +200,7 @@ public class ml2en {
         return keysStr;
     }
 
-    public void ml2en() {
+    public ml2en() {
         initVars();
     }
 
