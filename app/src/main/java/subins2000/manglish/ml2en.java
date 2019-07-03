@@ -9,7 +9,10 @@ import java.util.regex.Pattern;
 /**
  * Java port of ml2en.js
  * ml2en.js Copyright Kailash Nadh [GPL-2.0]
+ * https://github.com/knadh/ml2en
+ *
  * ml2en.java Copyright Subin Siby [GPL-3.0]
+ * https://github.com/knadh/ml2en/blob/master/ml2en.js
  */
 public class ml2en {
 
@@ -136,8 +139,6 @@ public class ml2en {
         // replace modified compounds first
         input = _replaceModifiedGlyphs(_compounds, input);
 
-        System.out.println(input);
-
         // replace modified non-compounds
         input = _replaceModifiedGlyphs(_vowels, input);
         input = _replaceModifiedGlyphs(_consonants, input);
@@ -149,9 +150,9 @@ public class ml2en {
             k = pair.getKey();
             v = pair.getValue();
 
-            input = Pattern.compile(k + "്([\\w])", 'g').matcher(input).replaceAll(v + "$1" );	// compounds ending in chandrakkala but not at the end of the word
-            input = Pattern.compile(k + "്", 'g').matcher(input).replaceAll(v + "u" );	// compounds ending in chandrakkala have +'u' pronunciation
-            input = Pattern.compile(k, 'g').matcher(input).replaceAll(v + 'a' );	// compounds not ending in chandrakkala have +'a' pronunciation
+            input = Pattern.compile(k + "്([\\w])", Pattern.UNICODE_CASE).matcher(input).replaceAll(v + "$1" );	// compounds ending in chandrakkala but not at the end of the word
+            input = Pattern.compile(k + "്", Pattern.UNICODE_CASE).matcher(input).replaceAll(v + "u" );	// compounds ending in chandrakkala have +'u' pronunciation
+            input = Pattern.compile(k, Pattern.UNICODE_CASE).matcher(input).replaceAll(v + "a" );	// compounds not ending in chandrakkala have +'a' pronunciation
         }
 
         // glyphs not ending in chandrakkala have +'a' pronunciation
@@ -159,7 +160,7 @@ public class ml2en {
             k = pair.getKey();
             v = pair.getValue();
 
-            input = Pattern.compile(k + "(?!്)", 'g').matcher(input).replaceAll(v + "a" );
+            input = Pattern.compile(k + "(?!്)", Pattern.UNICODE_CASE).matcher(input).replaceAll(v + "a" );
         }
 
         // glyphs ending in chandrakkala not at the end of a word
@@ -167,8 +168,54 @@ public class ml2en {
             k = pair.getKey();
             v = pair.getValue();
 
-            input = Pattern.compile(k + "(?![\\\\s\\)\\.;,\\\"'\\/\\\\\\%\\!])", 'g').matcher(input).replaceAll(v);
+            input = Pattern.compile(k + "്(?![\\s).;,\"'\\/])", Pattern.UNICODE_CASE | Pattern. CASE_INSENSITIVE).matcher(input).replaceAll(v);
         }
+
+        // remaining glyphs ending in chandrakkala will be at end of words and have a +'u' pronunciation
+        for (Map.Entry<String, String> pair : _consonants.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k + "്", Pattern.UNICODE_CASE | Pattern. CASE_INSENSITIVE).matcher(input).replaceAll(v + "u" );
+        }
+
+        // remaining consonants
+        for (Map.Entry<String, String> pair : _consonants.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k, Pattern.UNICODE_CASE).matcher(input).replaceAll(v);
+        }
+
+        // vowels
+        for (Map.Entry<String, String> pair : _vowels.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k, Pattern.UNICODE_CASE).matcher(input).replaceAll(v);
+        }
+
+        // chillu glyphs
+        for (Map.Entry<String, String> pair : _chil.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k, Pattern.UNICODE_CASE).matcher(input).replaceAll(v);
+        }
+
+        // anusvaram 'am' at the end
+        input = input.replaceAll("ം", "m");
+
+        // replace any stray modifiers that may have been left out
+        for (Map.Entry<String, String> pair : _modifiers.entrySet()) {
+            k = pair.getKey();
+            v = pair.getValue();
+
+            input = Pattern.compile(k, Pattern.UNICODE_CASE).matcher(input).replaceAll(v);
+        }
+
+        // capitalize first letter of sentences for better aeshetics
+        input = capitalizeFirstLetterInEverySentence(input);
 
         return input;
     }
@@ -176,18 +223,15 @@ public class ml2en {
     // ______ replace modified glyphs
     String _replaceModifiedGlyphs(Map glyphs, String input) {
         // see if a given set of glyphs have modifiers trailing them
-        int matchCount = 0;
         Matcher match;
-        Pattern re = Pattern.compile("(" + String.join("|", _getKeys(glyphs)) + ")(" + String.join("|", _getKeys(_modifiers)) + ")", 'g');
+        Pattern re = Pattern.compile("(" + String.join("|", _getKeys(glyphs)) + ")(" + String.join("|", _getKeys(_modifiers)) + ")", Pattern.UNICODE_CASE);
 
         // if yes, replace the glpyh with its roman equivalent, and the modifier with its
 
         match = re.matcher(input);
-        matchCount = match.groupCount();
 
         while (match.find()) {
-            System.out.println(match.group(0));
-            input = Pattern.compile(match.group(0), 'g').matcher(input).replaceAll(glyphs.get(match.group(1)) + _modifiers.get(match.group(2)));
+            input = Pattern.compile(match.group(0), Pattern.UNICODE_CASE).matcher(input).replaceAll(glyphs.get(match.group(1)) + _modifiers.get(match.group(2)));
         }
 
         return input;
@@ -198,6 +242,25 @@ public class ml2en {
         Set<String> keys = o.keySet();
         String[] keysStr = keys.toArray(new String[keys.size()]);
         return keysStr;
+    }
+
+    /**
+     * https://tech.chitgoks.com/2010/09/24/capitalize-first-letter-of-every-sentence-in-java/
+     * @param content Input
+     * @return Capitalized output
+     */
+    public static String capitalizeFirstLetterInEverySentence(String content) {
+        Pattern capitalize = Pattern.compile("([\\?!\\.]\\s*)([a-z])");
+        Matcher m = capitalize.matcher(content);
+        while (m.find()) {
+            content = m.replaceFirst(m.group(1) + m.group(2).toUpperCase());
+            m = capitalize.matcher(content);
+        }
+
+        // Capitalize the first letter of the string.
+        content = String.format("%s%s", Character.toUpperCase(content.charAt(0)), content.substring(1));
+
+        return content;
     }
 
     public ml2en() {
