@@ -25,6 +25,8 @@ public class ml2enTest {
         assertEquals("Malayaalam", m.convert("മലയാളം"));
         assertEquals("Thvakku", m.convert("ത്വക്ക്"));
         assertEquals("Pankaayam", m.convert("പങ്കായം"));
+
+        assertEquals("Hello", m.convert("hello"));
     }
 
     @Test

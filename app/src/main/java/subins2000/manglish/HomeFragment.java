@@ -139,7 +139,6 @@ public class HomeFragment extends Fragment implements AsyncResponse {
 
     private void constructAsyncThread(View view) {
         converterAsyncTask = new Converter();
-        converterAsyncTask.makeScope(view);
         converterAsyncTask.delegate = this;
     }
 

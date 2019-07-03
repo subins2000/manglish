@@ -20,7 +20,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'org.mozilla:rhino:1.7.10'
     implementation 'com.google.android.material:material:1.1.0-alpha07'
 
     testImplementation 'junit:junit:4.12'

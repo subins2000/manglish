@@ -238,7 +238,8 @@ public class ml2en {
     }
 
     // ______ get the keys of an object literal
-    String[] _getKeys(Map<String, String> o) {
+    @SuppressWarnings("unchecked")
+    String[] _getKeys(Map o) {
         Set<String> keys = o.keySet();
         String[] keysStr = keys.toArray(new String[keys.size()]);
         return keysStr;
