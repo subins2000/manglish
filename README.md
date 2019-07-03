@@ -40,8 +40,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 See `fastlane/` folder.
 
+* Update version in `app/build.gradle` file
 * Add changelog
 * Update screenshots
+* Make release APK
 
 ```
 fastlane supply --apk app/release/app-release.apk --json-key api-file.json  --track rollout --rollout 0.5 --package_name subins2000.manglish

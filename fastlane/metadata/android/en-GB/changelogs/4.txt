@@ -1,0 +1,3 @@
+* Conversion is 4 times faster now
+* Add clear field button
+* Reduced app size
