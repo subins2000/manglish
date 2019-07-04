@@ -224,7 +224,9 @@ public class ml2en {
     String _replaceModifiedGlyphs(Map glyphs, String input) {
         // see if a given set of glyphs have modifiers trailing them
         Matcher match;
-        Pattern re = Pattern.compile("(" + String.join("|", _getKeys(glyphs)) + ")(" + String.join("|", _getKeys(_modifiers)) + ")", Pattern.UNICODE_CASE);
+
+        // String.join is available only from API level 26
+        Pattern re = Pattern.compile("(" + joinString("|", _getKeys(glyphs)) + ")(" + joinString("|", _getKeys(_modifiers)) + ")", Pattern.UNICODE_CASE);
 
         // if yes, replace the glpyh with its roman equivalent, and the modifier with its
 
@@ -237,6 +239,20 @@ public class ml2en {
         return input;
     }
 
+    String joinString(CharSequence delimiter, Object[] tokens) {
+        final int length = tokens.length;
+        if (length == 0) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        sb.append(tokens[0]);
+        for (int i = 1; i < length; i++) {
+            sb.append(delimiter);
+            sb.append(tokens[i]);
+        }
+        return sb.toString();
+    }
+
     // ______ get the keys of an object literal
     @SuppressWarnings("unchecked")
     String[] _getKeys(Map o) {
@@ -246,22 +262,29 @@ public class ml2en {
     }
 
     /**
-     * https://tech.chitgoks.com/2010/09/24/capitalize-first-letter-of-every-sentence-in-java/
-     * @param content Input
+     * https://www.dreamincode.net/forums/topic/194413-capitalize-first-letter-of-each-sentence/
+     * @param str Input
      * @return Capitalized output
      */
-    public static String capitalizeFirstLetterInEverySentence(String content) {
-        Pattern capitalize = Pattern.compile("([\\?!\\.]\\s*)([a-z])");
-        Matcher m = capitalize.matcher(content);
-        while (m.find()) {
-            content = m.replaceFirst(m.group(1) + m.group(2).toUpperCase());
-            m = capitalize.matcher(content);
+    public static String capitalizeFirstLetterInEverySentence(String str) {
+        char[] arr = str.toCharArray();
+
+        // Start off by indicating to capitalize the first letter.
+        boolean cap = true;
+
+        for (int i = 0; i < arr.length; i++){
+            if (cap == true && !Character.isWhitespace(arr[i])) {
+                arr[i] =  Character.toUpperCase(arr[i]);
+                cap = false;
+            }
+
+            else {
+                if (arr[i] == '.' || arr[i] == '?') {
+                    cap = true;
+                }
+            }
         }
-
-        // Capitalize the first letter of the string.
-        content = String.format("%s%s", Character.toUpperCase(content.charAt(0)), content.substring(1));
-
-        return content;
+        return new String(arr);
     }
 
     public ml2en() {

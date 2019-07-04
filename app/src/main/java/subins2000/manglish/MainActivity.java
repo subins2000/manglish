@@ -17,6 +17,7 @@
 
 package subins2000.manglish;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -119,7 +120,10 @@ public class MainActivity extends AppCompatActivity
             menu.performIdentifierAction(R.id.nav_about, 0);
             activeNavId = R.id.nav_about;
             return true;
+        } else if (id == R.id.action_share) {
+            shareApp();
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -138,6 +142,8 @@ public class MainActivity extends AppCompatActivity
                     case R.id.nav_about:
                         setFragment(new AboutFragment());
                         return true;
+                    case R.id.nav_share:
+                        shareApp();
                 }
             }
             return false;
@@ -164,5 +170,12 @@ public class MainActivity extends AppCompatActivity
         if (curFocus != null) {
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    private void shareApp() {
+        Intent intent2 = new Intent(); intent2.setAction(Intent.ACTION_SEND);
+        intent2.setType("text/plain");
+        intent2.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message));
+        startActivity(Intent.createChooser(intent2, "Share via"));
     }
 }
