@@ -1,0 +1,5 @@
+* Conversion is 4 times faster now
+* Add clear field & share button
+* Reduced app size
+* Fix bugs & crashes
+* Fix app not working in older android versions
