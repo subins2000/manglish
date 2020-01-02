@@ -44,7 +44,7 @@ public class ml2en {
         _compounds.put("ച്ച", "cch");
         _compounds.put("ജ്ജ", "jj");
         _compounds.put("ഞ്ഞ", "nj");
-        _compounds.put("ട്ട", "tt");
+        _compounds.put("ട്ട", "TT");
         _compounds.put("ണ്ണ", "nn");
         _compounds.put("ത്ത", "tth");
         _compounds.put("ദ്ദ", "ddh");
