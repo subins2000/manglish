@@ -9,7 +9,7 @@ public class Converter extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... text) {
         ml2en m = new ml2en();
-        return m.convert(text[0]);
+        return m.convert(text[0], false);
     }
 
     @Override

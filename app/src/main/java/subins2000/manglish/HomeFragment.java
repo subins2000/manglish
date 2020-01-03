@@ -158,6 +158,7 @@ public class HomeFragment extends Fragment implements AsyncResponse {
 
     void updateOutput(View view) {
         TextView outputText = view.findViewById(R.id.outputText);
+        view.findViewById(R.id.outputView).setVisibility(view.VISIBLE);
         outputText.setText(R.string.converting);
 
         if (converterAsyncTask.getStatus() != AsyncTask.Status.PENDING){

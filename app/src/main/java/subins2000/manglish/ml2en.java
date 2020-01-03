@@ -132,7 +132,7 @@ public class ml2en {
     }
 
     // ______ transliterate a malayalam string to english phonetically
-    String transliterate(String input) {
+    String transliterate(String input, boolean capitalize) {
         // replace zero width non joiners
         input = input.replace("/[\u200B-\u200D\uFEFF]/g", "");
 
@@ -214,8 +214,10 @@ public class ml2en {
             input = Pattern.compile(k, Pattern.UNICODE_CASE).matcher(input).replaceAll(v);
         }
 
-        // capitalize first letter of sentences for better aeshetics
-        input = capitalizeFirstLetterInEverySentence(input);
+        if (capitalize) {
+            // capitalize first letter of sentences for better aeshetics
+            input = capitalizeFirstLetterInEverySentence(input);
+        }
 
         return input;
     }
@@ -291,8 +293,8 @@ public class ml2en {
         initVars();
     }
 
-    public String convert(String input) {
-        return transliterate(input);
+    public String convert(String input, boolean capitalize) {
+        return transliterate(input, capitalize);
     }
 
 }
