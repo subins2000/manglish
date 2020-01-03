@@ -64,10 +64,12 @@
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/outputView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
-        android:layout_margin="5dp">
+        android:layout_margin="5dp"
+        android:visibility="invisible"
+        app:cardCornerRadius="10dp">
 
         <android.widget.ScrollView
             android:layout_width="match_parent"
