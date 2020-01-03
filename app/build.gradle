@@ -6,8 +6,8 @@ android {
         applicationId "subins2000.manglish"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 5
-        versionName "5.0"
+        versionCode 6
+        versionName "6.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

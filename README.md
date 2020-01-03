@@ -46,5 +46,5 @@ See `fastlane/` folder.
 * Make release APK
 
 ```
-fastlane supply --apk app/release/app-release.apk --json-key api-file.json  --track rollout --rollout 0.5 --package_name subins2000.manglish
+fastlane supply --apk app/release/app-release.apk --json-key api-file.json --track production --rollout 0.5 --package_name subins2000.manglish
 ```

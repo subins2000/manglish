@@ -1,0 +1,2 @@
+* Improved UI
+* Use "TT" for "ട്ട" & "tt" for "റ്റ"
