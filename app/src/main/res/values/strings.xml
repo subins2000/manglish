@@ -22,5 +22,7 @@
     <string name="project_site">http://subinsb.com/manglish</string>
 
     <string name="share_message">Convert Malayalam text to Manglish !\n\n"എന്റെ മലയാളം" -> "ente malayalam"\n\nPlay Store - https://play.google.com/store/apps/details?id=subins2000.manglish\n\nF-Droid - https://www.f-droid.org/en/packages/subins2000.manglish/</string>
+    <string name="accessibility_service_label">Malayalam to Manglish Converter</string>
+    <string name="accessibility_service_description">Convert Malayalam text in all apps to Manglish</string>
 
 </resources>
