@@ -1,7 +1,7 @@
 package subins2000.manglish;
 
 import android.accessibilityservice.AccessibilityService;
-import android.content.Context;
+import android.app.ActionBar;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +13,7 @@ import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -29,33 +30,31 @@ public class OnScreenOverlay extends AccessibilityService {
     private ml2en engine;
     private RelativeLayout overlayLayout;
     private int statusBarHeight;
-    private boolean gestureActive = false;
+    private boolean doTransliteration = false;
 
     @Override
     public void onServiceConnected() {
         Log.d("bbb", "bb");
         engine = new ml2en();
 
-        WindowManager mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         overlayLayout = new RelativeLayout(getApplicationContext());
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                width,
-                height,
+                ActionBar.LayoutParams.MATCH_PARENT,
+                ActionBar.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN |
                         WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
-                        WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
                         WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
                 PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.TOP;
+        params.alpha = 100;
 
         overlayLayout.setLayoutParams(params);
         overlayLayout.setPadding(0, 0, 0, 0);
@@ -63,19 +62,44 @@ public class OnScreenOverlay extends AccessibilityService {
         statusBarHeight = getStatusBarHeight();
 
         mWindowManager.addView(overlayLayout, params);
+
+        WindowManager.LayoutParams mobParams = new WindowManager.LayoutParams();
+        mobParams.type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
+        mobParams.x = 0;
+        mobParams.y = 0;
+        mobParams.format = PixelFormat.TRANSLUCENT;
+        mobParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        mobParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        mobParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        mobParams.gravity = Gravity.TOP | Gravity.LEFT;
+
+        ManglishOverlayButton mob = new ManglishOverlayButton(
+                getApplicationContext(),
+                mWindowManager,
+                mobParams,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        doTransliteration = true;
+                    }
+                }
+        );
+        mob.setBackground(getResources().getDrawable(R.mipmap.ic_launcher));
+
+        mWindowManager.addView(mob, mobParams);
     }
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-            overlayLayout.removeAllViewsInLayout();
-            return;
-        }
+//        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+//            overlayLayout.removeAllViewsInLayout();
+//            return;
+//        }
 
         Log.i("aa", "aaa");
 
-        if (!gestureActive) return;
-        gestureActive = false;
+        if (!doTransliteration) return;
+        doTransliteration = false;
 
         AccessibilityNodeInfo source;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -135,7 +159,7 @@ public class OnScreenOverlay extends AccessibilityService {
         Log.i("g", "g");
         if (gestureId == GESTURE_SWIPE_LEFT_AND_RIGHT) {
             Log.i("g", "ggg");
-            gestureActive = true;
+            doTransliteration = true;
             return true;
         }
         return true;
