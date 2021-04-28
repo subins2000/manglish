@@ -20,6 +20,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,8 @@ public class OnScreenOverlay extends AccessibilityService {
     private ml2en engine;
     private RelativeLayout overlayLayout;
     private int statusBarHeight;
-    private boolean doTransliteration = false;
+
+    private boolean transliterated = false;
 
     @Override
     public void onServiceConnected() {
@@ -68,7 +70,8 @@ public class OnScreenOverlay extends AccessibilityService {
         mobParams.x = 0;
         mobParams.y = 0;
         mobParams.format = PixelFormat.TRANSLUCENT;
-        mobParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        mobParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mobParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         mobParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         mobParams.gravity = Gravity.TOP | Gravity.LEFT;
@@ -80,7 +83,14 @@ public class OnScreenOverlay extends AccessibilityService {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        doTransliteration = true;
+                        if (transliterated) {
+                            // deactivate
+                            removeTransliteration();
+                        } else {
+                            // activate
+                            removeTransliteration();
+                            transliterateScreen();
+                        }
                     }
                 }
         );
@@ -91,21 +101,19 @@ public class OnScreenOverlay extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-//        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-//            overlayLayout.removeAllViewsInLayout();
-//            return;
-//        }
+        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED && transliterated) {
+            removeTransliteration();
+        }
+    }
 
-        Log.i("aa", "aaa");
-
-        if (!doTransliteration) return;
-        doTransliteration = false;
-
-        AccessibilityNodeInfo source;
+    private void transliterateScreen() {
+        AccessibilityNodeInfo source = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            // Works only above or equal to API level 16
             source = getRootInActiveWindow();
         } else {
-            source = event.getSource();
+            Toast.makeText(getApplicationContext(), "This feature works only on Android Jelly Bean and above",
+                    Toast.LENGTH_LONG).show();
         }
 
         if (source == null) {
@@ -148,21 +156,20 @@ public class OnScreenOverlay extends AccessibilityService {
             converted.setLayoutParams(layoutParams);
 
             converted.setText(engine.convert(text, false));
-            converted.setBackgroundColor(Color.parseColor("#C1E8F9"));
+            // blue like in whatsapp date bg - C1E8F9
+            converted.setTextColor(Color.parseColor("#FFFFFF"));
+            converted.setBackgroundColor(Color.parseColor("#202124"));
 
             overlayLayout.addView(converted);
         }
+
+        transliterated = true;
     }
 
-    @Override
-    public boolean onGesture(int gestureId) {
-        Log.i("g", "g");
-        if (gestureId == GESTURE_SWIPE_LEFT_AND_RIGHT) {
-            Log.i("g", "ggg");
-            doTransliteration = true;
-            return true;
-        }
-        return true;
+    private void removeTransliteration() {
+        if (!transliterated) return;
+        overlayLayout.removeAllViewsInLayout();
+        transliterated = false;
     }
 
     @Override

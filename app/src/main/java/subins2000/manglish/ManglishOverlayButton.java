@@ -59,12 +59,10 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
 
             case MotionEvent.ACTION_UP:
                 long duration = event.getEventTime() - event.getDownTime();
-                if (duration < CLICK_THRESHOLD)
-                    Log.d("aa", "cccc");
+                if (duration < CLICK_THRESHOLD) {
+                    Log.d("zz", "cccc");
                     clickListener.onClick(view);
-                break;
-            case MotionEvent.ACTION_BUTTON_PRESS:
-                Log.d("z", "a");
+                }
                 break;
             default:
                 return false;
