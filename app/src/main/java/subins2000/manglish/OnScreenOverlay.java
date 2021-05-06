@@ -2,12 +2,16 @@ package subins2000.manglish;
 
 import android.accessibilityservice.AccessibilityService;
 import android.app.ActionBar;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
@@ -31,15 +35,19 @@ public class OnScreenOverlay extends AccessibilityService {
     private ml2en engine;
     private RelativeLayout overlayLayout;
     private int statusBarHeight;
+    private int overlayTextPadding;
 
     private boolean transliterated = false;
 
+    private ManglishOverlayButton mob;
+    private Uri buttonImageURI, buttonActiveImageURI;
+
     @Override
     public void onServiceConnected() {
-        Log.d("bbb", "bb");
+        Log.d("manglish", "Manglish service connected");
         engine = new ml2en();
 
-        WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        final WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         overlayLayout = new RelativeLayout(getApplicationContext());
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -62,6 +70,7 @@ public class OnScreenOverlay extends AccessibilityService {
         overlayLayout.setPadding(0, 0, 0, 0);
 
         statusBarHeight = getStatusBarHeight();
+        overlayTextPadding = (int) Math.ceil(4 * getResources().getDisplayMetrics().density);
 
         mWindowManager.addView(overlayLayout, params);
 
@@ -76,27 +85,47 @@ public class OnScreenOverlay extends AccessibilityService {
         mobParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         mobParams.gravity = Gravity.TOP | Gravity.LEFT;
 
-        ManglishOverlayButton mob = new ManglishOverlayButton(
+        mob = new ManglishOverlayButton(
                 getApplicationContext(),
                 mWindowManager,
-                mobParams,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (transliterated) {
-                            // deactivate
-                            removeTransliteration();
-                        } else {
-                            // activate
-                            removeTransliteration();
-                            transliterateScreen();
-                        }
-                    }
-                }
+                mobParams
         );
-        mob.setBackground(getResources().getDrawable(R.mipmap.ic_launcher));
+
+        mob.setClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (transliterated) {
+                    // deactivate
+                    removeTransliteration();
+                } else {
+                    // activate
+                    removeTransliteration();
+                    transliterateScreen();
+                }
+            }
+        });
+        mob.setHoldListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mWindowManager.removeView(mob);
+            }
+        });
+
+        mob.setMaxHeight(200);
+        mob.setMaxWidth(200);
+
+        buttonImageURI = resourceToUri(getApplicationContext(), R.mipmap.overlay_button);
+        buttonActiveImageURI = resourceToUri(getApplicationContext(), R.mipmap.overlay_button_active);
+        mob.setImageURI(buttonImageURI);
 
         mWindowManager.addView(mob, mobParams);
+    }
+
+    public static Uri resourceToUri(Context context, int resID) {
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+            context.getResources().getResourcePackageName(resID) + '/' +
+            context.getResources().getResourceTypeName(resID) + '/' +
+            context.getResources().getResourceEntryName(resID) );
     }
 
     @Override
@@ -156,20 +185,25 @@ public class OnScreenOverlay extends AccessibilityService {
             converted.setLayoutParams(layoutParams);
 
             converted.setText(engine.convert(text, false));
+
             // blue like in whatsapp date bg - C1E8F9
             converted.setTextColor(Color.parseColor("#FFFFFF"));
-            converted.setBackgroundColor(Color.parseColor("#202124"));
+//            converted.setBackgroundColor(Color.parseColor("#202124"));
+            converted.setPadding(overlayTextPadding, overlayTextPadding, overlayTextPadding, overlayTextPadding);
+            converted.setBackgroundResource(R.drawable.overlay_text_gradient);
 
             overlayLayout.addView(converted);
         }
 
         transliterated = true;
+        mob.setImageURI(buttonActiveImageURI);
     }
 
     private void removeTransliteration() {
         if (!transliterated) return;
         overlayLayout.removeAllViewsInLayout();
         transliterated = false;
+        mob.setImageURI(buttonImageURI);
     }
 
     @Override

@@ -16,10 +16,11 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
     float dY;
 
     private static int CLICK_THRESHOLD = 200;
+    private static int HOLD_THRESHOLD = 800;
 
     WindowManager wm;
     WindowManager.LayoutParams params;
-    OnClickListener clickListener;
+    OnClickListener clickListener, holdListener;
 
     public ManglishOverlayButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -31,20 +32,29 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
         init();
     }
 
-    public ManglishOverlayButton(Context context, WindowManager wmL, WindowManager.LayoutParams paramsL, OnClickListener callback) {
+    public ManglishOverlayButton(Context context, WindowManager wmL, WindowManager.LayoutParams paramsL) {
         super(context);
         wm = wmL;
         params = paramsL;
-        clickListener = callback;
         init();
+    }
+
+    public void setClickListener(OnClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    public void setHoldListener(OnClickListener holdListener) {
+        this.holdListener = holdListener;
     }
 
     private void init() {
         setOnTouchListener(this);
+        this.setScaleType(ScaleType.FIT_CENTER);
+        this.setAdjustViewBounds(true);
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent event){
+    public boolean onTouch(View view, MotionEvent event) {
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 dX = params.x - event.getRawX();
@@ -60,8 +70,10 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
             case MotionEvent.ACTION_UP:
                 long duration = event.getEventTime() - event.getDownTime();
                 if (duration < CLICK_THRESHOLD) {
-                    Log.d("zz", "cccc");
+                    Log.d("manglish-action", "click");
                     clickListener.onClick(view);
+                } else if (duration < HOLD_THRESHOLD) {
+                    Log.d("manglish-action", "hold");
                 }
                 break;
             default:
