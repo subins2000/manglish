@@ -40,7 +40,8 @@ import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        HomeFragment.OnFragmentInteractionListener, AboutFragment.OnFragmentInteractionListener {
+        HomeFragment.OnFragmentInteractionListener, AboutFragment.OnFragmentInteractionListener,
+        OverlayAboutFragment.OnFragmentInteractionListener {
 
     private static final String NAV_ID = "NavId";
 
@@ -115,10 +116,21 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.action_about && activeNavId != R.id.nav_about) {
             setFragment(new AboutFragment());
+
             Menu menu = navigationView.getMenu();
             menu.findItem(R.id.nav_about).setChecked(true);
             menu.performIdentifierAction(R.id.nav_about, 0);
+
             activeNavId = R.id.nav_about;
+            return true;
+        } else if (id == R.id.action_overlay_about && activeNavId != R.id.action_overlay_about) {
+            setFragment(new OverlayAboutFragment());
+
+            Menu menu = navigationView.getMenu();
+            menu.findItem(R.id.nav_overlay_about).setChecked(true);
+            menu.performIdentifierAction(R.id.nav_about, 0);
+
+            activeNavId = R.id.action_overlay_about;
             return true;
         } else if (id == R.id.action_share) {
             shareApp();
@@ -138,6 +150,9 @@ public class MainActivity extends AppCompatActivity
                 switch (id) {
                     case R.id.nav_home:
                         setFragment(new HomeFragment());
+                        return true;
+                    case R.id.nav_overlay_about:
+                        setFragment(new OverlayAboutFragment());
                         return true;
                     case R.id.nav_about:
                         setFragment(new AboutFragment());

@@ -4,6 +4,7 @@ import android.accessibilityservice.AccessibilityService;
 import android.app.ActionBar;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +14,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -111,8 +113,20 @@ public class OnScreenOverlay extends AccessibilityService {
             }
         });
 
-        mob.setMaxHeight(200);
-        mob.setMaxWidth(200);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int size = prefs.getInt("overlay_button_size", 200);
+        changeButtonSize(size);
+
+        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+                if (s.equals("overlay_button_size")) {
+                    int size = sharedPreferences.getInt("overlay_button_size", 200);
+                    changeButtonSize(size);
+                }
+            }
+        };
+        prefs.registerOnSharedPreferenceChangeListener(listener);
 
         buttonImageURI = resourceToUri(getApplicationContext(), R.mipmap.overlay_button);
         buttonActiveImageURI = resourceToUri(getApplicationContext(), R.mipmap.overlay_button_active);
@@ -204,6 +218,13 @@ public class OnScreenOverlay extends AccessibilityService {
         overlayLayout.removeAllViewsInLayout();
         transliterated = false;
         mob.setImageURI(buttonImageURI);
+    }
+
+    private void changeButtonSize(int size) {
+        mob.setMinimumHeight(size);
+        mob.setMinimumWidth(size);
+        mob.setMaxHeight(size);
+        mob.setMaxWidth(size);
     }
 
     @Override

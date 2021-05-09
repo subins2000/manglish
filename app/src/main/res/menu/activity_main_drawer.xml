@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_menu_home"
             android:title="@string/nav_home" />
         <item
+            android:id="@+id/nav_overlay_about"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="@string/nav_overlay_about" />
+        <item
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/nav_about" />
