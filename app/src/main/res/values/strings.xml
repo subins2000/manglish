@@ -27,7 +27,7 @@
     <string name="accessibility_service_description">Convert Malayalam text in all apps to Manglish</string>
     <string name="overlay_info">Enabling this will display an on screen overlay button. When clicking, it will convert every Malayalam text on screen to Manglish. It won\'t work in some apps though.</string>
     <string name="overlay_accessibility_enable_button">Enable In Settings</string>
-    <string name="overlay_accessibility_enabled_button">Enabled</string>
+    <string name="overlay_accessibility_enabled_button">Disable</string>
     <string name="overlay_settings">Button Size</string>
 
 </resources>

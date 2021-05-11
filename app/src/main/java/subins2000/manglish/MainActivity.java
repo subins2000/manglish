@@ -25,6 +25,7 @@ import android.os.Bundle;
 import com.google.android.material.navigation.NavigationView;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +57,10 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // If overlay button is hidden, display it.
+        // This is a toggling of the value
+        prefs.edit().putBoolean("display_overlay", !prefs.getBoolean("display_overlay", false)).apply();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity
 
             Menu menu = navigationView.getMenu();
             menu.findItem(R.id.nav_overlay_about).setChecked(true);
-            menu.performIdentifierAction(R.id.nav_about, 0);
+            menu.performIdentifierAction(R.id.nav_overlay_about, 0);
 
             activeNavId = R.id.action_overlay_about;
             return true;

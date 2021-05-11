@@ -81,7 +81,7 @@ public class OverlayAboutFragment extends Fragment {
             }
         });
 
-        int progress = prefs.getInt("overlay_button_size", 200);
+        int progress = prefs.getInt("overlay_button_size", OnScreenOverlay.defaultButtonSize);
 
         final AppCompatTextView sliderValue = view.findViewById(R.id.slider_value);
         AppCompatSeekBar seekBar = view.findViewById(R.id.overlay_button_size_slider);

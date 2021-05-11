@@ -2,6 +2,7 @@ package subins2000.manglish;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,11 +17,10 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
     float dY;
 
     private static int CLICK_THRESHOLD = 200;
-    private static int HOLD_THRESHOLD = 800;
 
     WindowManager wm;
     WindowManager.LayoutParams params;
-    OnClickListener clickListener, holdListener;
+    OnClickListener clickListener, dragListener, releaseListener;
 
     public ManglishOverlayButton(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -43,14 +43,27 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
         this.clickListener = clickListener;
     }
 
-    public void setHoldListener(OnClickListener holdListener) {
-        this.holdListener = holdListener;
+    public void setDragListener(OnClickListener dragListener) {
+        this.dragListener = dragListener;
     }
+    public void setReleaseListener(OnClickListener releaseListener) { this.releaseListener = releaseListener; }
 
     private void init() {
         setOnTouchListener(this);
         this.setScaleType(ScaleType.FIT_CENTER);
         this.setAdjustViewBounds(true);
+    }
+
+    public void resetPosition() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+
+        params.x = ((int) (width * 0.7)) - params.width;
+        params.y = height / 2 - params.height;
+        wm.updateViewLayout(this, params);
     }
 
     @Override
@@ -65,6 +78,7 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
                 params.y = (int) (event.getRawY() + dY);
                 params.x = (int) (event.getRawX() + dX);
                 wm.updateViewLayout(this, params);
+                dragListener.onClick(view);
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -72,9 +86,8 @@ public class ManglishOverlayButton extends AppCompatImageButton implements View.
                 if (duration < CLICK_THRESHOLD) {
                     Log.d("manglish-action", "click");
                     clickListener.onClick(view);
-                } else if (duration < HOLD_THRESHOLD) {
-                    Log.d("manglish-action", "hold");
                 }
+                releaseListener.onClick(view);
                 break;
             default:
                 return false;

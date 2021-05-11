@@ -11,7 +11,6 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -19,6 +18,7 @@ import android.text.style.ReplacementSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -33,16 +33,21 @@ import java.util.ArrayList;
 /**
  * Transliterate text to Manglish on every app/screen
  */
-public class OnScreenOverlay extends AccessibilityService {
+public class OnScreenOverlay extends AccessibilityService implements SharedPreferences.OnSharedPreferenceChangeListener {
     private ml2en engine;
+    private SharedPreferences prefs;
+
     private RelativeLayout overlayLayout;
     private int statusBarHeight;
     private int overlayTextPadding;
 
+    private boolean serviceActive = true;
     private boolean transliterated = false;
 
     private ManglishOverlayButton mob;
+    public static int defaultButtonSize = 150;
     private Uri buttonImageURI, buttonActiveImageURI;
+    private View removalPaneContainer;
 
     @Override
     public void onServiceConnected() {
@@ -50,20 +55,24 @@ public class OnScreenOverlay extends AccessibilityService {
         engine = new ml2en();
 
         final WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+
+        /*
+         * Add Overlay Layout & Removal Pane
+         */
         overlayLayout = new RelativeLayout(getApplicationContext());
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                ActionBar.LayoutParams.MATCH_PARENT,
-                ActionBar.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN |
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
-                        WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-                PixelFormat.TRANSLUCENT
+            ActionBar.LayoutParams.MATCH_PARENT,
+            ActionBar.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
+                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+            PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.TOP;
         params.alpha = 100;
@@ -74,12 +83,26 @@ public class OnScreenOverlay extends AccessibilityService {
         statusBarHeight = getStatusBarHeight();
         overlayTextPadding = (int) Math.ceil(4 * getResources().getDisplayMetrics().density);
 
+        removalPaneContainer = LayoutInflater.from(getApplicationContext()).inflate(R.layout.overlay_button_removal_pane, null);
+        WindowManager.LayoutParams removalPaneParams = new WindowManager.LayoutParams();
+        removalPaneParams.type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
+        removalPaneParams.format = PixelFormat.TRANSLUCENT;
+        removalPaneParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        removalPaneParams.y = displayMetrics.heightPixels;
+        removalPaneContainer.setLayoutParams(removalPaneParams);
+
+        removalPaneContainer.setVisibility(View.INVISIBLE);
+        mWindowManager.addView(removalPaneContainer, params);
+
         mWindowManager.addView(overlayLayout, params);
+
+        /*
+         * Add overlay button
+         */
 
         WindowManager.LayoutParams mobParams = new WindowManager.LayoutParams();
         mobParams.type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
-        mobParams.x = 0;
-        mobParams.y = 0;
         mobParams.format = PixelFormat.TRANSLUCENT;
         mobParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -106,33 +129,35 @@ public class OnScreenOverlay extends AccessibilityService {
                 }
             }
         });
-        mob.setHoldListener(new View.OnClickListener() {
+        mob.setDragListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mWindowManager.removeView(mob);
+                removalPaneContainer.setVisibility(View.VISIBLE);
+            }
+        });
+        final View removalPane = removalPaneContainer.findViewById(R.id.removal_pane);
+        mob.setReleaseListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (isViewOverlappingVertically(view, removalPane)) {
+                    hideOverlay();
+                }
+                removalPaneContainer.setVisibility(View.INVISIBLE);
             }
         });
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        int size = prefs.getInt("overlay_button_size", 200);
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int size = prefs.getInt("overlay_button_size", defaultButtonSize);
         changeButtonSize(size);
 
-        SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-            @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-                if (s.equals("overlay_button_size")) {
-                    int size = sharedPreferences.getInt("overlay_button_size", 200);
-                    changeButtonSize(size);
-                }
-            }
-        };
-        prefs.registerOnSharedPreferenceChangeListener(listener);
+        prefs.registerOnSharedPreferenceChangeListener(this);
 
         buttonImageURI = resourceToUri(getApplicationContext(), R.mipmap.overlay_button);
         buttonActiveImageURI = resourceToUri(getApplicationContext(), R.mipmap.overlay_button_active);
         mob.setImageURI(buttonImageURI);
 
         mWindowManager.addView(mob, mobParams);
+        mob.resetPosition();
     }
 
     public static Uri resourceToUri(Context context, int resID) {
@@ -144,7 +169,7 @@ public class OnScreenOverlay extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
-        if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED && transliterated) {
+        if (serviceActive && event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED && transliterated) {
             removeTransliteration();
         }
     }
@@ -168,9 +193,11 @@ public class OnScreenOverlay extends AccessibilityService {
 
         for (int i = 0;i < children.size();i++) {
             child = children.get(i);
-            Log.i("cc", child.getClassName().toString());
+            CharSequence className = child.getClassName();
+            if (className == null) continue;
 
-            if (!child.getClassName().equals("android.widget.TextView") || child.getText() == null) continue;
+            Log.i("cc", className.toString());
+            if (!className.equals("android.widget.TextView") || child.getText() == null) continue;
 
             // here level is iteration of for loop
             String text = child.getText().toString();
@@ -201,8 +228,8 @@ public class OnScreenOverlay extends AccessibilityService {
             converted.setText(engine.convert(text, false));
 
             // blue like in whatsapp date bg - C1E8F9
-            converted.setTextColor(Color.parseColor("#FFFFFF"));
 //            converted.setBackgroundColor(Color.parseColor("#202124"));
+            converted.setTextColor(Color.parseColor("#FFFFFF"));
             converted.setPadding(overlayTextPadding, overlayTextPadding, overlayTextPadding, overlayTextPadding);
             converted.setBackgroundResource(R.drawable.overlay_text_gradient);
 
@@ -227,6 +254,26 @@ public class OnScreenOverlay extends AccessibilityService {
         mob.setMaxWidth(size);
     }
 
+    private void hideOverlay() {
+        serviceActive = false;
+        mob.setVisibility(View.INVISIBLE);
+        overlayLayout.setVisibility(View.INVISIBLE);
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        if (s.equals("overlay_button_size")) {
+            int size = sharedPreferences.getInt("overlay_button_size", defaultButtonSize);
+            changeButtonSize(size);
+        } else if (s.equals("display_overlay")) {
+            // This preference value is only a bus message event for displaying overlay
+
+            serviceActive = true;
+            mob.resetPosition();
+            mob.setVisibility(View.VISIBLE);
+            overlayLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void onInterrupt() {
     }
@@ -241,24 +288,38 @@ public class OnScreenOverlay extends AccessibilityService {
     }
 
     private ArrayList<AccessibilityNodeInfo> getAllChildren(AccessibilityNodeInfo v) {
-        if (v == null) return new ArrayList<AccessibilityNodeInfo>();
+        ArrayList<AccessibilityNodeInfo> visited = new ArrayList<AccessibilityNodeInfo>();
+        ArrayList<AccessibilityNodeInfo> unvisited = new ArrayList<AccessibilityNodeInfo>();
+        unvisited.add(v);
 
-        ArrayList<AccessibilityNodeInfo> result = new ArrayList<AccessibilityNodeInfo>();
+        while (!unvisited.isEmpty()) {
+            AccessibilityNodeInfo child = unvisited.remove(0);
+            visited.add(child);
 
-        if (v.getChildCount() == 0) {
-            result.add(v);
-            return result;
+            final int childCount = child.getChildCount();
+            for (int i=0; i < childCount; i++) unvisited.add(child.getChild(i));
         }
 
-        for (int i = 0; i < v.getChildCount(); i++) {
-            AccessibilityNodeInfo child = v.getChild(i);
+        return visited;
+    }
 
-            ArrayList<AccessibilityNodeInfo> viewArrayList = new ArrayList<AccessibilityNodeInfo>();
-            viewArrayList.addAll(getAllChildren(child));
+    /**
+     * Thanks Abandoned Cart https://stackoverflow.com/a/43640028/1372424
+     * @param firstView
+     * @param secondView
+     * @return bool
+     */
+    private boolean isViewOverlappingVertically(View firstView, View secondView) {
+        int[] firstPosition = new int[2];
+        int[] secondPosition = new int[2];
 
-            result.addAll(viewArrayList);
-        }
-        return result;
+        firstView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        firstView.getLocationOnScreen(firstPosition);
+        secondView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        secondView.getLocationOnScreen(secondPosition);
+
+        return firstPosition[1] < secondPosition[1] + secondView.getMeasuredHeight()
+            && firstPosition[1] + firstView.getMeasuredHeight() > secondPosition[1];
     }
 
     /**
