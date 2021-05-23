@@ -133,7 +133,6 @@ public class HomeFragment extends Fragment implements AsyncResponse {
         }
 
         constructAsyncThread(view);
-
         return view;
     }
 
