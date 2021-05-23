@@ -25,9 +25,10 @@
     <string name="share_message">Convert Malayalam text to Manglish !\n\n"എന്റെ മലയാളം" -> "ente malayalam"\n\nPlay Store - https://play.google.com/store/apps/details?id=subins2000.manglish\n\nF-Droid - https://www.f-droid.org/en/packages/subins2000.manglish/</string>
     <string name="accessibility_service_label">Malayalam to Manglish Converter</string>
     <string name="accessibility_service_description">Convert Malayalam text in all apps to Manglish</string>
-    <string name="overlay_info">Enabling this will display an on screen overlay button. When clicking, it will convert every Malayalam text on screen to Manglish. It won\'t work in some apps though.</string>
+    <string name="overlay_info">Enabling this will display an on screen overlay button. When clicking, it will convert every Malayalam text on screen to Manglish. It won\'t work in some apps though.\n\nFor Android 10 and above, go to \"Installed Services\" to enable it.</string>
     <string name="overlay_accessibility_enable_button">Enable In Settings</string>
     <string name="overlay_accessibility_enabled_button">Disable</string>
     <string name="overlay_settings">Button Size</string>
+    <string name="support">Support and help maintain this project. Feedback welcome :)</string>
 
 </resources>

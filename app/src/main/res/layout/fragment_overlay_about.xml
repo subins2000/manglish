@@ -73,7 +73,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/slider_value"
-                    android:layout_width="30dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="200"
                     android:textSize="18sp" />
