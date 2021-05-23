@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +38,7 @@ public class OnScreenOverlay extends AccessibilityService implements SharedPrefe
     private ml2en engine;
     private SharedPreferences prefs;
 
-    private RelativeLayout overlayLayout;
+    private FrameLayout overlayLayout;
     private int statusBarHeight;
     private int overlayTextPadding;
 
@@ -52,6 +53,14 @@ public class OnScreenOverlay extends AccessibilityService implements SharedPrefe
     @Override
     public void onServiceConnected() {
         Log.d("manglish", "Manglish service connected");
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
+            // Accessibility overlay works only above or equal to API level 22
+            Toast.makeText(getApplicationContext(), "This feature works only on Android Lollipop (5.1) and above",
+                Toast.LENGTH_LONG).show();
+            return;
+        }
+
         engine = new ml2en();
 
         final WindowManager mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -59,24 +68,12 @@ public class OnScreenOverlay extends AccessibilityService implements SharedPrefe
         /*
          * Add Overlay Layout & Removal Pane
          */
-        overlayLayout = new RelativeLayout(getApplicationContext());
+        overlayLayout = new FrameLayout(getApplicationContext());
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mWindowManager.getDefaultDisplay().getMetrics(displayMetrics);
 
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-            ActionBar.LayoutParams.MATCH_PARENT,
-            ActionBar.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                WindowManager.LayoutParams.FLAG_FULLSCREEN |
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-            PixelFormat.TRANSLUCENT
-        );
-        params.gravity = Gravity.TOP;
-        params.alpha = 100;
-
+        WindowManager.LayoutParams params = getOverlayLayoutParams();
         overlayLayout.setLayoutParams(params);
         overlayLayout.setPadding(0, 0, 0, 0);
 
@@ -174,15 +171,22 @@ public class OnScreenOverlay extends AccessibilityService implements SharedPrefe
         }
     }
 
+    private WindowManager.LayoutParams getOverlayLayoutParams() {
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.type = WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
+        layoutParams.format = PixelFormat.TRANSLUCENT;
+        layoutParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.gravity = Gravity.TOP | Gravity.CENTER;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE;
+        return layoutParams;
+    }
+
     private void transliterateScreen() {
-        AccessibilityNodeInfo source = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            // Works only above or equal to API level 16
-            source = getRootInActiveWindow();
-        } else {
-            Toast.makeText(getApplicationContext(), "This feature works only on Android Jelly Bean and above",
-                    Toast.LENGTH_LONG).show();
-        }
+        AccessibilityNodeInfo source = getRootInActiveWindow();
 
         if (source == null) {
             return;
@@ -196,12 +200,18 @@ public class OnScreenOverlay extends AccessibilityService implements SharedPrefe
             CharSequence className = child.getClassName();
             if (className == null) continue;
 
-            Log.i("cc", className.toString());
-            if (!className.equals("android.widget.TextView") || child.getText() == null) continue;
+            Log.d("manglish-classname", className.toString());
 
-            // here level is iteration of for loop
-            String text = child.getText().toString();
-            Log.i("bb", text);
+            String text;
+            try {
+                text = child.getText().toString();
+                Log.d("manglish-class-text", text);
+            } catch(Exception e) {
+                // Not a TextView or doesn't have getText method
+                // Instagram has their own TextView implementations like "IgTextLayoutView"
+                // Hence why there's no class name check and directly looking up method
+                continue;
+            }
 
             if (!hasMalayalam(text)) continue;
 
@@ -297,7 +307,9 @@ public class OnScreenOverlay extends AccessibilityService implements SharedPrefe
             visited.add(child);
 
             final int childCount = child.getChildCount();
-            for (int i=0; i < childCount; i++) unvisited.add(child.getChild(i));
+            for (int i=0; i < childCount; i++) {
+                unvisited.add(child.getChild(i));
+            }
         }
 
         return visited;
