@@ -1,0 +1,3 @@
+* NEW FEATURE! An overlay screen button to convert Malayalam on any app with just a click !
+* Uses "T" for "ട". പാടം => paaTam (paddy field)
+* Uses "TT" for "ട്ട". പാട്ട് => paaTT (song)
