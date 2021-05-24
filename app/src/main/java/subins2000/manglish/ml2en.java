@@ -80,7 +80,7 @@ public class ml2en {
         _consonants.put("ജ", "j");
         _consonants.put("ഝ", "jh");
         _consonants.put("ഞ", "nj");
-        _consonants.put("ട", "t");
+        _consonants.put("ട", "T");
         _consonants.put("ഠ", "dt");
         _consonants.put("ഡ", "d");
         _consonants.put("ഢ", "dd");
@@ -295,6 +295,10 @@ public class ml2en {
 
     public String convert(String input, boolean capitalize) {
         return transliterate(input, capitalize);
+    }
+
+    public String convert(String input) {
+        return transliterate(input, true);
     }
 
 }
