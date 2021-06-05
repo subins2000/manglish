@@ -84,7 +84,7 @@ public class ml2en {
         _consonants.put("ഠ", "dt");
         _consonants.put("ഡ", "d");
         _consonants.put("ഢ", "dd");
-        _consonants.put("ണ", "n");
+        _consonants.put("ണ", "N");
         _consonants.put("ത", "th");
         _consonants.put("ഥ", "th");
         _consonants.put("ദ", "d");
